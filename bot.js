@@ -9,8 +9,17 @@ const client = new Client({
         dataPath: "./session"
     }),
     puppeteer: {
-        executablePath: "/usr/bin/google-chrome",
-        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        headless: true,
+        args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--no-first-run",
+            "--no-zygote",
+            "--single-process",
+            "--disable-gpu"
+        ]
     }
 })
 
