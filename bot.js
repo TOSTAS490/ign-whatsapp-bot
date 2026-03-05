@@ -20,6 +20,7 @@ client.on("ready", () => {
 client.initialize()
 
 let lastLink = null
+let firstRun = true
 
 async function checkRSS() {
     setInterval(async () => {
@@ -30,6 +31,12 @@ async function checkRSS() {
 
         if (latest.link !== lastLink) {
 
+            if (firstRun) {
+                lastLink = latest.link
+                firstRun = false
+                return
+            }
+
             lastLink = latest.link
 
             const chats = await client.getChats()
@@ -37,16 +44,11 @@ async function checkRSS() {
 
             if (group) {
 
-                group.sendMessage(
-`IGN 🎮
-
-${latest.title}
-
-${latest.link}`
-                )
+                group.sendMessage(latest.link)
 
             }
         }
 
     }, 300000)
+
 }
