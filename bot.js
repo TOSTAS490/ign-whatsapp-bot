@@ -9,12 +9,13 @@ const client = new Client({
         dataPath: "./session"
     }),
     puppeteer: {
+        executablePath: "/usr/bin/google-chrome",
         args: ["--no-sandbox", "--disable-setuid-sandbox"]
     }
 })
 
 client.on("qr", qr => {
-    console.log("Escaneia este QR no WhatsApp")
+    console.log("Escaneia o QR no WhatsApp")
     qrcode.generate(qr, { small: true })
 })
 
@@ -35,7 +36,6 @@ async function checkRSS() {
         try {
 
             const feed = await parser.parseURL("https://pt.ign.com/news.xml")
-
             const latest = feed.items[0]
 
             if (latest.link !== lastLink) {
@@ -58,8 +58,8 @@ async function checkRSS() {
 
             }
 
-        } catch (error) {
-            console.log("Erro ao ler RSS:", error)
+        } catch (err) {
+            console.log("Erro RSS:", err)
         }
 
     }, 300000)
