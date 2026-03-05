@@ -8,6 +8,7 @@
   "dependencies": {
     "whatsapp-web.js": "*",
     "rss-parser": "*",
-    "qrcode-terminal": "*"
+    "qrcode-terminal": "*",
+    "puppeteer-core": "*"
   }
 }
