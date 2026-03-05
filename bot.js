@@ -5,10 +5,16 @@ const Parser = require("rss-parser")
 const parser = new Parser()
 
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth({
+        dataPath: "./session"
+    }),
+    puppeteer: {
+        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    }
 })
 
 client.on("qr", qr => {
+    console.log("Escaneia este QR no WhatsApp")
     qrcode.generate(qr, { small: true })
 })
 
@@ -23,30 +29,37 @@ let lastLink = null
 let firstRun = true
 
 async function checkRSS() {
+
     setInterval(async () => {
 
-        const feed = await parser.parseURL("https://pt.ign.com/news.xml")
+        try {
 
-        const latest = feed.items[0]
+            const feed = await parser.parseURL("https://pt.ign.com/news.xml")
 
-        if (latest.link !== lastLink) {
+            const latest = feed.items[0]
 
-            if (firstRun) {
+            if (latest.link !== lastLink) {
+
+                if (firstRun) {
+                    lastLink = latest.link
+                    firstRun = false
+                    return
+                }
+
                 lastLink = latest.link
-                firstRun = false
-                return
-            }
 
-            lastLink = latest.link
+                const chats = await client.getChats()
+                const group = chats.find(c => c.name === "Cãimbras FC")
 
-            const chats = await client.getChats()
-            const group = chats.find(c => c.name === "Cãimbras FC")
-
-            if (group) {
-
-                group.sendMessage(latest.link)
+                if (group) {
+                    group.sendMessage(latest.link)
+                    console.log("Notícia enviada:", latest.link)
+                }
 
             }
+
+        } catch (error) {
+            console.log("Erro ao ler RSS:", error)
         }
 
     }, 300000)
